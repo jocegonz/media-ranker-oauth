@@ -1,5 +1,7 @@
 <section>
+
   <%= form_for @work do |f| %>
+
     <%= f.label :category %>
     <%= f.select :category, Work::CATEGORIES %>
 
