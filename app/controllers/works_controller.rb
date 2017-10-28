@@ -4,6 +4,9 @@ class WorksController < ApplicationController
   before_action :category_from_work, except: [:root, :index, :new, :create]
 
   def root
+    if  session[:user_id]
+      @login_user = User.find_by(id: session[:user_id])
+    end
     @albums = Work.best_albums
     @books = Work.best_books
     @movies = Work.best_movies
@@ -98,4 +101,6 @@ private
     render_404 unless @work
     @media_category = @work.category.downcase.pluralize
   end
+
+
 end
