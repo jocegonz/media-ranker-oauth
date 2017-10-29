@@ -44,27 +44,44 @@ class WorksController < ApplicationController
   end
 
   def edit
+    if find_user && (@login_user.id != @work.user_id)
+      flash[:status] = :failure
+      flash[:result_text] = "You cannot update a product that isn't yours."
+      redirect_to work_path(@work.id)
+    end
   end
 
   def update
-    @work.update_attributes(media_params)
-    if @work.save
-      flash[:status] = :success
-      flash[:result_text] = "Successfully updated #{@media_category.singularize} #{@work.id}"
-      redirect_to work_path(@work)
+    if find_user && (@login_user.id != @work.user_id)
+      flash[:status] = :failure
+      flash[:result_text] = "You cannot update a product that isn't yours."
+      redirect_to work_path(@work.id)
     else
-      flash.now[:status] = :failure
-      flash.now[:result_text] = "Could not update #{@media_category.singularize}"
-      flash.now[:messages] = @work.errors.messages
-      render :edit, status: :not_found
+      @work.update_attributes(media_params)
+      if @work.save
+        flash[:status] = :success
+        flash[:result_text] = "Successfully updated #{@media_category.singularize} #{@work.id}"
+        redirect_to work_path(@work)
+      else
+        flash.now[:status] = :failure
+        flash.now[:result_text] = "Could not update #{@media_category.singularize}"
+        flash.now[:messages] = @work.errors.messages
+        render :edit, status: :not_found
+      end
     end
   end
 
   def destroy
+    if find_user && (@login_user.id != @work.user_id)
+      flash[:status] = :failure
+      flash[:result_text] = "You cannot delete a product that isn't yours."
+      redirect_to work_path(@work.id)
+    else
     @work.destroy
     flash[:status] = :success
     flash[:result_text] = "Successfully destroyed #{@media_category.singularize} #{@work.id}"
     redirect_to root_path
+    end
   end
 
   def upvote
